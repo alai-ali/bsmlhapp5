@@ -3,69 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BSMLH v8.6 | Full Recovery</title>
+    <title>BSMLH v8.7 | Settings & Bio</title>
     <style>
-        :root { --gold: #f6851b; --bg: #000; --wc-bg: #ededed; --neon: #00f2ff; }
+        :root { --gold: #f6851b; --bg: #000; --wc-bg: #ededed; --neon: #00f2ff; --green: #07c160; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #000; color: #fff; height: 100vh; overflow: hidden; position: fixed; width: 100%; }
-
-        /* ЗАСТАВКА */
-        #splash { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadeOut 0.5s forwards 2.5s; pointer-events: none; }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
-        .s-title { font-size: 50px; font-weight: 900; letter-spacing: 12px; color: #fff; }
-        .s-sub { font-size: 10px; color: #fff; margin-top: 15px; text-align: center; max-width: 80%; text-transform: uppercase; letter-spacing: 1px; }
 
         /* ЭКРАНЫ */
         .screen { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; padding: 25px; background: #000; z-index: 1000; }
         .active { display: flex; }
-        .globe-wrap { position: absolute; top: 20px; right: 20px; z-index: 2000; cursor: pointer; }
-        .lang-menu { position: absolute; top: 45px; right: 0; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; display: none; flex-direction: column; width: 120px; }
-        .lang-menu div { padding: 12px; text-align: center; color: #fff; border-bottom: 1px solid #333; }
-
-        /* КИБЕР-ГРАФИКА */
-        .cyber-logo { width: 100px; height: 100px; border: 2px solid var(--neon); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 30px; position: relative; }
-        .cyber-logo::after { content: '🛡️'; font-size: 45px; }
-        .scan-line { position: absolute; width: 100%; height: 2px; background: var(--neon); animation: scan 2s infinite linear; top:0; }
-        @keyframes scan { to { top: 100%; } }
+        
+        /* ЗАСТАВКА */
+        #splash { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadeOut 0.5s forwards 2.5s; pointer-events: none; }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        .s-title { font-size: 50px; font-weight: 900; letter-spacing: 12px; }
 
         /* ПРИЛОЖЕНИЕ */
         #app { display: none; height: 100vh; flex-direction: column; background: var(--wc-bg); z-index: 5000; position: absolute; inset: 0; color: #000; }
-        header { height: 60px; background: #1a1a1a; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 600; }
+        header { height: 60px; background: #1a1a1a; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 600; position: relative; }
+        .back-btn { position: absolute; left: 15px; font-size: 14px; color: var(--gold); display: none; cursor: pointer; }
         .content { flex: 1; overflow-y: auto; }
 
         /* WECHAT СТИЛЬ */
-        .wc-header { background: #fff; padding: 40px 20px; display: flex; align-items: center; position: relative; margin-bottom: 8px; }
+        .wc-header { background: #fff; padding: 40px 20px; display: flex; align-items: center; margin-bottom: 8px; }
         #user-photo { width: 64px; height: 64px; border-radius: 10px; margin-right: 20px; background: #f3f3f3; object-fit: cover; }
         .wc-group { background: #fff; margin-bottom: 8px; border-top: 0.5px solid #ddd; border-bottom: 0.5px solid #ddd; }
         .wc-item { display: flex; align-items: center; padding: 14px 20px; position: relative; cursor: pointer; background: #fff; }
+        .wc-item:active { background: #f2f2f2; }
         .wc-item:not(:last-child)::after { content: ''; position: absolute; left: 55px; right: 0; bottom: 0; height: 0.5px; background: #eee; }
-        .wc-icon { width: 25px; margin-right: 15px; font-size: 20px; text-align: center; }
         .wc-text { flex: 1; font-size: 16px; color: #000; }
+        .wc-icon { width: 25px; margin-right: 15px; font-size: 20px; text-align: center; }
         .wc-arrow { color: #b2b2b2; font-size: 14px; }
 
+        /* FOOTER */
         footer { height: 85px; padding-bottom: 25px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #ddd; background: #f7f7f7; }
         .n-btn { color: #999; font-size: 10px; font-weight: bold; text-align: center; }
-        .n-btn.on { color: #07c160; }
+        .n-btn.on { color: var(--green); }
 
+        /* UI КНОПКИ */
         input { background:#111; border:1px solid #333; padding:16px; color:#fff; border-radius:12px; width:300px; margin-bottom:10px; outline:none; }
         .btn-m { background: var(--gold); color: #000; border: none; padding: 18px; border-radius: 12px; font-weight: bold; width: 300px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <div class="s-title">BSMLH</div>
-        <div class="s-sub">BIOMETRIC SECURITY MULTIFUNCTION LEDGER FOR HUMANITY</div>
-    </div>
+    <div id="splash"><div class="s-title">BSMLH</div></div>
 
     <div id="scr-reg" class="screen active">
-        <div class="globe-wrap" onclick="toggleLang()"><div style="font-size:30px;">🌐</div>
-            <div id="l-menu" class="lang-menu">
-                <div onclick="setLang('RU')">Русский</div>
-                <div onclick="setLang('EN')">English</div>
-            </div>
-        </div>
-        <h2 id="reg-t" style="margin-top: 80px; margin-bottom: 20px;">РЕГИСТРАЦИЯ</h2>
+        <h2 style="margin-top: 80px; margin-bottom: 20px;">РЕГИСТРАЦИЯ</h2>
         <input type="text" id="in-f" placeholder="ИМЯ">
         <input type="text" id="in-l" placeholder="ФАМИЛИЯ">
         <button class="btn-m" onclick="startCam()">ДАЛЕЕ</button>
@@ -77,37 +62,55 @@
     </div>
 
     <div id="scr-chip" class="screen">
-        <div class="cyber-logo"><div class="scan-line"></div></div>
-        <h3 id="chip-t" style="height:30px;"></h3>
+        <div style="font-size: 80px; margin: 40px;">💍</div>
+        <h3 id="chip-t" style="height:30px; margin-bottom: 20px;">ГЕНЕРАЦИЯ КЛЮЧА...</h3>
         <button class="btn-m" onclick="activateChip()">АКТИВИРОВАТЬ</button>
-        <div style="margin-top:15px; text-decoration:underline; font-size:13px; cursor:pointer;" onclick="toApp()">ВОЙТИ БЕЗ ЧИПА</div>
+        <div style="margin-top:15px; text-decoration:underline; font-size:13px; cursor:pointer;" onclick="toApp()">ПРОПУСТИТЬ</div>
     </div>
 
     <div id="app">
-        <header>BSMLH</header>
+        <header>
+            <div id="back-btn" class="back-btn" onclick="tab('prof')">❮ Назад</div>
+            <span id="head-title">BSMLH</span>
+        </header>
+        
         <div class="content">
             <div id="view-chat">
-                 <div style="padding: 20px; color: #888; text-align: center;">No messages yet</div>
+                <div style="padding: 20px; color: #888; text-align: center;">Безопасное соединение установлено.</div>
             </div>
-            
+
             <div id="view-prof" style="display:none;">
                 <div class="wc-header">
                     <img id="user-photo" src="" alt="">
                     <div class="u-info">
                         <h2 id="u-name-disp">User</h2>
-                        <p style="color:#888;">ID: <span id="hu-id">HU-7701</span></p>
+                        <p style="color:#888;">ID: <span id="hu-id">HU-0000</span></p>
                     </div>
                 </div>
                 <div class="wc-group">
-                    <div class="wc-item"><span class="wc-icon">💳</span><span class="wc-text">Services</span><span class="wc-arrow">></span></div>
+                    <div class="wc-item"><span class="wc-icon">💳</span><span class="wc-text">Сервисы</span><span class="wc-arrow">></span></div>
                 </div>
                 <div class="wc-group">
-                    <div class="wc-item"><span class="wc-icon" style="color:#ff9500;">📦</span><span class="wc-text">Favorites</span><span class="wc-arrow">></span></div>
-                    <div class="wc-item"><span class="wc-icon" style="color:#007aff;">🖼️</span><span class="wc-text">Moments</span><span class="wc-arrow">></span></div>
-                    <div class="wc-item"><span class="wc-icon" style="color:#4cd964;">⚙️</span><span class="wc-text">Settings</span><span class="wc-arrow">></span></div>
+                    <div class="wc-item"><span class="wc-icon" style="color:orange;">📦</span><span class="wc-text">Избранное</span><span class="wc-arrow">></span></div>
+                    <div class="wc-item"><span class="wc-icon" style="color:blue;">🖼️</span><span class="wc-text">Моменты</span><span class="wc-arrow">></span></div>
+                    <div class="wc-item" onclick="openSettings()"><span class="wc-icon" style="color:green;">⚙️</span><span class="wc-text">Настройки</span><span class="wc-arrow">></span></div>
+                </div>
+            </div>
+
+            <div id="view-settings" style="display:none;">
+                <div class="wc-group">
+                    <div class="wc-item" onclick="editInfo('Имя')"><span class="wc-text">Изменить Имя</span><span class="wc-arrow">></span></div>
+                    <div class="wc-item" onclick="editInfo('Фамилия')"><span class="wc-text">Изменить Фамилию</span><span class="wc-arrow">></span></div>
+                </div>
+                <div class="wc-group">
+                    <div class="wc-item" onclick="alert('Версия 8.7')"><span class="wc-text">О приложении</span><span class="wc-arrow">></span></div>
+                </div>
+                <div style="padding: 20px;">
+                    <button class="btn-m" style="background:#fff; color:red; border:1px solid #ddd;" onclick="location.reload()">Выйти</button>
                 </div>
             </div>
         </div>
+
         <footer>
             <div id="n-chat" class="n-btn on" onclick="tab('chat')">CHAT</div>
             <div id="n-prof" class="n-btn" onclick="tab('prof')">PROFILE</div>
@@ -117,13 +120,14 @@
     <canvas id="photo-canvas" style="display:none;"></canvas>
 
     <script>
-        function toggleLang() { const m = document.getElementById('l-menu'); m.style.display = m.style.display==='flex'?'none':'flex'; }
-        function setLang(l) { document.getElementById('reg-t').innerText = (l==='RU'?'РЕГИСТРАЦИЯ':'REGISTRATION'); toggleLang(); }
+        let user = { f: '', l: '', id: '' };
 
         async function startCam() {
-            if(!document.getElementById('in-f').value || !document.getElementById('in-l').value) return;
-            document.getElementById('scr-reg').classList.remove('active');
-            document.getElementById('scr-scan').classList.add('active');
+            user.f = document.getElementById('in-f').value;
+            user.l = document.getElementById('in-l').value;
+            if(!user.f || !user.l) return;
+            document.getElementById('scr-reg').style.display = 'none';
+            document.getElementById('scr-scan').style.display = 'flex';
             const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
             document.getElementById('video-feed').srcObject = s;
         }
@@ -134,24 +138,51 @@
             c.getContext('2d').drawImage(v,0,0);
             document.getElementById('user-photo').src = c.toDataURL();
             v.srcObject.getTracks().forEach(t => t.stop());
-            document.getElementById('scr-scan').classList.remove('active');
-            document.getElementById('scr-chip').classList.add('active');
+            document.getElementById('scr-scan').style.display = 'none';
+            document.getElementById('scr-chip').style.display = 'flex';
         }
 
-        function activateChip() { document.getElementById('chip-t').innerText="ОЖИДАНИЕ ЧИПА..."; setTimeout(toApp, 1500); }
+        function activateChip() {
+            document.getElementById('chip-t').innerText = "КЛЮЧ СОЗДАН";
+            setTimeout(toApp, 1000);
+        }
 
         function toApp() {
-            document.getElementById('u-name-disp').innerText = document.getElementById('in-f').value + " " + document.getElementById('in-l').value;
-            document.getElementById('hu-id').innerText = "HU-" + Math.random().toString(36).substr(2, 8).toUpperCase();
-            document.getElementById('scr-chip').classList.remove('active');
+            user.id = "HU-" + Math.random().toString(36).substr(2, 6).toUpperCase();
+            updateUI();
+            document.getElementById('scr-chip').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
+        }
+
+        function updateUI() {
+            document.getElementById('u-name-disp').innerText = user.f + " " + user.l;
+            document.getElementById('hu-id').innerText = user.id;
         }
 
         function tab(t) {
             document.getElementById('view-chat').style.display = (t==='chat'?'block':'none');
             document.getElementById('view-prof').style.display = (t==='prof'?'block':'none');
+            document.getElementById('view-settings').style.display = 'none';
+            document.getElementById('back-btn').style.display = 'none';
+            document.getElementById('head-title').innerText = 'BSMLH';
             document.getElementById('n-chat').classList.toggle('on', t==='chat');
             document.getElementById('n-prof').classList.toggle('on', t==='prof');
+        }
+
+        function openSettings() {
+            document.getElementById('view-prof').style.display = 'none';
+            document.getElementById('view-settings').style.display = 'block';
+            document.getElementById('back-btn').style.display = 'block';
+            document.getElementById('head-title').innerText = 'Настройки';
+        }
+
+        function editInfo(field) {
+            let res = prompt("Введите новое " + field);
+            if(res) {
+                if(field === 'Имя') user.f = res;
+                else user.l = res;
+                updateUI();
+            }
         }
     </script>
 </body>
