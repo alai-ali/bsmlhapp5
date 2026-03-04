@@ -22,11 +22,21 @@ body { background:#000; color:#fff; height:100vh; overflow:hidden; position:fixe
 #app { display:none; height:100vh; flex-direction:column; background:var(--wc-bg); z-index:5000; position:absolute; inset:0; color:#000; }
 header { height:60px; background:#1a1a1a; color:#fff; display:flex; justify-content:center; align-items:center; font-weight:600; }
 .content { flex:1; overflow-y:auto; padding:10px; }
-.chat-item { display:flex; padding:12px 15px; border-bottom:1px solid #dbdbdb; align-items:center; background:#fff; margin-bottom:5px; border-radius:8px; }
-.chat-av { width:48px; height:48px; background:#eee; border-radius:8px; margin-right:12px; font-size:24px; display:flex; align-items:center; justify-content:center; }
 footer { height:85px; padding-bottom:25px; display:flex; justify-content:space-around; align-items:center; border-top:1px solid #ddd; background:#f7f7f7; }
 .n-btn { color:#999; font-size:10px; font-weight:bold; cursor:pointer; }
 .n-btn.on { color:#07c160; }
+
+/* PROFILE / WECHAT STYLE */
+.wc-header { background:#fff; padding:40px 20px; display:flex; align-items:center; position:relative; margin-bottom:8px; border-radius:12px; }
+#user-photo { width:64px; height:64px; border-radius:10px; margin-right:20px; background:#f3f3f3; object-fit:cover; }
+.u-info h2 { font-size:20px; margin-bottom:4px; color:#000; }
+.u-info p { color:#888; font-size:14px; }
+.wc-group { background:#fff; margin-bottom:8px; border-top:0.5px solid #ddd; border-bottom:0.5px solid #ddd; border-radius:12px; overflow:hidden; }
+.wc-item { display:flex; align-items:center; padding:14px 20px; position:relative; cursor:pointer; }
+.wc-item:not(:last-child)::after { content: ''; position: absolute; left:55px; right:0; bottom:0; height:0.5px; background:#eee; }
+.wc-icon { width:22px; margin-right:15px; font-size:20px; text-align:center; }
+.wc-text { flex:1; font-size:16px; color:#000; }
+.wc-arrow { color:#b2b2b2; font-size:14px; }
 </style>
 </head>
 <body>
@@ -57,15 +67,67 @@ footer { height:85px; padding-bottom:25px; display:flex; justify-content:space-a
   <header>BSMLH</header>
   <div class="content" id="view-chat"></div>
   <footer>
-    <div id="n-chat" class="n-btn on">CHAT</div>
+    <div id="n-prof" class="n-btn on" onclick="tab('prof')">PROFILE</div>
   </footer>
+</div>
+
+<!-- PROFILE SCREEN -->
+<div id="view-prof" class="screen" style="display:none; background:#ededed; overflow-y:auto;">
+  <div class="wc-header">
+    <img id="user-photo" src="" alt="">
+    <div class="u-info">
+      <h2 id="u-name-disp">User</h2>
+      <p>ID: bsmlh_7701</p>
+    </div>
+  </div>
+
+  <div class="wc-group">
+    <div class="wc-item" onclick="alert('Открыть Services')">
+      <span class="wc-icon">💳</span>
+      <span class="wc-text">Services</span>
+      <span class="wc-arrow">></span>
+    </div>
+  </div>
+
+  <div class="wc-group">
+    <div class="wc-item" onclick="alert('Открыть Favorites')">
+      <span class="wc-icon" style="color:#ff9500;">📦</span>
+      <span class="wc-text">Favorites</span>
+      <span class="wc-arrow">></span>
+    </div>
+    <div class="wc-item" onclick="alert('Открыть Moments')">
+      <span class="wc-icon" style="color:#007aff;">🖼️</span>
+      <span class="wc-text">Moments</span>
+      <span class="wc-arrow">></span>
+    </div>
+    <div class="wc-item" onclick="alert('Открыть Cards & Offers')">
+      <span class="wc-icon" style="color:#5ac8fa;">🧧</span>
+      <span class="wc-text">Cards & Offers</span>
+      <span class="wc-arrow">></span>
+    </div>
+    <div class="wc-item" onclick="alert('Открыть Stickers')">
+      <span class="wc-icon" style="color:#ffcc00;">😀</span>
+      <span class="wc-text">Stickers</span>
+      <span class="wc-arrow">></span>
+    </div>
+  </div>
+
+  <div class="wc-group">
+    <div class="wc-item" onclick="alert('Открыть Settings')">
+      <span class="wc-icon" style="color:#4cd964;">⚙️</span>
+      <span class="wc-text">Settings</span>
+      <span class="wc-arrow">></span>
+    </div>
+  </div>
 </div>
 
 <canvas id="photo-canvas" style="display:none;"></canvas>
 
 <script>
+// Local Storage Key
 const storageKey = 'bsmlh_user';
 
+// Load saved user
 window.onload = () => {
   const saved = JSON.parse(localStorage.getItem(storageKey));
   if(saved && saved.chipActive){
@@ -74,80 +136,70 @@ window.onload = () => {
     document.getElementById('scr-chip').classList.remove('active');
     document.getElementById('app').style.display='flex';
     loadUser(saved);
-    loadChats();
   }
 }
 
+// CAMERA
 async function startCam(){
-  if(!document.getElementById('in-f').value) return alert("Введите имя");
-  document.getElementById('scr-reg').classList.remove('active');
-  document.getElementById('scr-scan').classList.add('active');
-  try {
-    const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
-    document.getElementById('video-feed').srcObject = s;
-  } catch(e){
-    alert("Не удалось открыть камеру");
-  }
+    const name = document.getElementById('in-f').value.trim();
+    if(!name) return alert("Введите имя");
+    document.getElementById('scr-reg').classList.remove('active');
+    document.getElementById('scr-scan').classList.add('active');
+    try{
+        const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
+        const video = document.getElementById('video-feed');
+        video.srcObject = stream;
+        video.onloadedmetadata = ()=>video.play();
+    } catch(e){
+        alert("Не удалось открыть камеру");
+        document.getElementById('scr-scan').classList.remove('active');
+        document.getElementById('scr-reg').classList.add('active');
+    }
 }
 
 function takePhoto(){
-  const v = document.getElementById('video-feed'), c = document.getElementById('photo-canvas');
-  c.width=v.videoWidth; c.height=v.videoHeight;
-  c.getContext('2d').drawImage(v,0,0);
-  const photoData = c.toDataURL();
-  v.srcObject.getTracks().forEach(t=>t.stop());
-  document.getElementById('scr-scan').classList.remove('active');
-  document.getElementById('scr-chip').classList.add('active');
-  localStorage.setItem(storageKey, JSON.stringify({name:document.getElementById('in-f').value, photo:photoData, chipActive:false}));
-  document.getElementById('userPhotoTemp')?.remove();
-  const img = document.createElement('img');
-  img.src = photoData;
-  img.id = 'userPhotoTemp';
-  img.style.display='none';
-  document.body.appendChild(img);
+    const video = document.getElementById('video-feed');
+    const canvas = document.getElementById('photo-canvas');
+    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+    const photoData = canvas.toDataURL();
+    video.srcObject.getTracks().forEach(t=>t.stop());
+    localStorage.setItem(storageKey, JSON.stringify({name:document.getElementById('in-f').value.trim(), photo:photoData, chipActive:false}));
+    document.getElementById('scr-scan').classList.remove('active');
+    document.getElementById('scr-chip').classList.add('active');
 }
 
+// CHIP SCAN
 function activateChip(){
-  document.getElementById('chip-t').innerText="СКАНИРОВАНИЕ...";
-  setTimeout(()=>{
-    const data = JSON.parse(localStorage.getItem(storageKey));
-    data.chipActive=true;
-    localStorage.setItem(storageKey, JSON.stringify(data));
-    toApp(data);
-  },2000);
+    document.getElementById('chip-t').innerText="СКАНИРОВАНИЕ...";
+    setTimeout(()=>{
+        const data = JSON.parse(localStorage.getItem(storageKey));
+        data.chipActive=true;
+        localStorage.setItem(storageKey, JSON.stringify(data));
+        toApp(data);
+    },2000);
 }
 
 function toApp(data){
-  document.getElementById('scr-chip').classList.remove('active');
-  document.getElementById('app').style.display='flex';
-  loadUser(data);
-  loadChats();
+    document.getElementById('scr-chip').classList.remove('active');
+    document.getElementById('app').style.display='flex';
+    loadUser(data);
 }
 
+// LOAD USER DATA
 function loadUser(data){
-  if(!data) data = JSON.parse(localStorage.getItem(storageKey));
-  document.getElementById('view-chat').innerHTML = <h2>Привет, ${data.name}</h2>;
-  if(data.photo){
-    const img = document.createElement('img');
-    img.src = data.photo;
-    img.style.width='100px';
-    img.style.height='100px';
-    img.style.borderRadius='50%';
-    document.getElementById('view-chat').appendChild(img);
-  }
+    if(!data) data = JSON.parse(localStorage.getItem(storageKey));
+    document.getElementById('u-name-disp').innerText = data.name;
+    document.getElementById('user-photo').src = data.photo;
 }
 
-function loadChats(){
-  const l = document.getElementById('view-chat');
-  const u=[{n:"Alex",a:"🤖"},{n:"Sarah",a:"🎨"},{n:"Ahmed",a:"🌙"}];
-  u.forEach(x=>{
-    const div=document.createElement('div');
-    div.className='chat-item';
-    div.innerHTML=<div class="chat-av">${x.a}</div><div><h4>${x.n}</h4><p style="color:#b2b2b2;font-size:13px;">Secure connection active</p></div>;
-    l.appendChild(div);
-  });
+// PROFILE TAB
+function tab(t){
+    if(t==='prof'){
+        document.getElementById('app').style.display='none';
+        document.getElementById('view-prof').style.display='block';
+    }
 }
 </script>
-
 </body>
 </html>
