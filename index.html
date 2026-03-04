@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSMLH MVP</title>
+<style>
+:root { --gold: #f6851b; --bg: #000; --wc-bg: #ededed; --neon: #00f2ff; }
+* { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, sans-serif; }
+body { background:#000; color:#fff; height:100vh; overflow:hidden; position:fixed; width:100%; }
+#splash { position:fixed; inset:0; z-index:9999; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; animation:fadeOut 0.5s forwards 2.5s; pointer-events:none; }
+@keyframes fadeOut { to { opacity:0; visibility:hidden; } }
+.s-title { font-size:50px; font-weight:900; letter-spacing:12px; color:#fff; }
+.s-sub { font-size:10px; color:#fff; margin-top:15px; text-align:center; max-width:80%; text-transform:uppercase; letter-spacing:1px; }
+.screen { position:absolute; inset:0; display:none; flex-direction:column; align-items:center; padding:25px; background:#000; z-index:1000; }
+.active { display:flex; }
+.btn-m { background:var(--gold); color:#000; border:none; padding:18px; border-radius:12px; font-weight:bold; width:100%; max-width:300px; cursor:pointer; margin-top:15px; }
+.cyber-logo { width:100px; height:100px; border:2px solid var(--neon); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:30px; position:relative; }
+.cyber-logo::after { content:'🛡️'; font-size:45px; }
+.scan-line { position:absolute; width:100%; height:2px; background:var(--neon); animation:scan 2s infinite linear; top:0; }
+@keyframes scan { to { top:100%; } }
+#app { display:none; height:100vh; flex-direction:column; background:var(--wc-bg); z-index:5000; position:absolute; inset:0; color:#000; }
+header { height:60px; background:#1a1a1a; color:#fff; display:flex; justify-content:center; align-items:center; font-weight:600; }
+.content { flex:1; overflow-y:auto; padding:10px; }
+.chat-item { display:flex; padding:12px 15px; border-bottom:1px solid #dbdbdb; align-items:center; background:#fff; margin-bottom:5px; border-radius:8px; }
+.chat-av { width:48px; height:48px; background:#eee; border-radius:8px; margin-right:12px; font-size:24px; display:flex; align-items:center; justify-content:center; }
+footer { height:85px; padding-bottom:25px; display:flex; justify-content:space-around; align-items:center; border-top:1px solid #ddd; background:#f7f7f7; }
+.n-btn { color:#999; font-size:10px; font-weight:bold; cursor:pointer; }
+.n-btn.on { color:#07c160; }
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="s-title">BSMLH</div>
+  <div class="s-sub">BIOMETRIC SECURITY MULTIFUNCTION LEDGER FOR HUMANITY</div>
+</div>
+
+<div id="scr-reg" class="screen active">
+  <h2 style="margin-top:80px; margin-bottom:20px;">РЕГИСТРАЦИЯ</h2>
+  <input type="text" id="in-f" placeholder="ИМЯ" style="background:#111; border:1px solid #333; padding:16px; color:#fff; border-radius:12px; width:300px; outline:none;">
+  <button class="btn-m" onclick="startCam()">ДАЛЕЕ</button>
+</div>
+
+<div id="scr-scan" class="screen">
+  <video id="video-feed" autoplay playsinline style="width:260px; height:260px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); transform:scaleX(-1);"></video>
+  <button class="btn-m" onclick="takePhoto()">СДЕЛАТЬ ФОТО</button>
+</div>
+
+<div id="scr-chip" class="screen">
+  <div class="cyber-logo"><div class="scan-line"></div></div>
+  <h3 id="chip-t" style="height:30px;"></h3>
+  <button class="btn-m" onclick="activateChip()">СКАНИРОВАТЬ ЧИП</button>
+</div>
+
+<div id="app">
+  <header>BSMLH</header>
+  <div class="content" id="view-chat"></div>
+  <footer>
+    <div id="n-chat" class="n-btn on">CHAT</div>
+  </footer>
+</div>
+
+<canvas id="photo-canvas" style="display:none;"></canvas>
+
+<script>
+const storageKey = 'bsmlh_user';
+
+window.onload = () => {
+  const saved = JSON.parse(localStorage.getItem(storageKey));
+  if(saved && saved.chipActive){
+    document.getElementById('scr-reg').classList.remove('active');
+    document.getElementById('scr-scan').classList.remove('active');
+    document.getElementById('scr-chip').classList.remove('active');
+    document.getElementById('app').style.display='flex';
+    loadUser(saved);
+    loadChats();
+  }
+}
+
+async function startCam(){
+  if(!document.getElementById('in-f').value) return alert("Введите имя");
+  document.getElementById('scr-reg').classList.remove('active');
+  document.getElementById('scr-scan').classList.add('active');
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
+    document.getElementById('video-feed').srcObject = s;
+  } catch(e){
+    alert("Не удалось открыть камеру");
+  }
+}
+
+function takePhoto(){
+  const v = document.getElementById('video-feed'), c = document.getElementById('photo-canvas');
+  c.width=v.videoWidth; c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  const photoData = c.toDataURL();
+  v.srcObject.getTracks().forEach(t=>t.stop());
+  document.getElementById('scr-scan').classList.remove('active');
+  document.getElementById('scr-chip').classList.add('active');
+  localStorage.setItem(storageKey, JSON.stringify({name:document.getElementById('in-f').value, photo:photoData, chipActive:false}));
+  document.getElementById('userPhotoTemp')?.remove();
+  const img = document.createElement('img');
+  img.src = photoData;
+  img.id = 'userPhotoTemp';
+  img.style.display='none';
+  document.body.appendChild(img);
+}
+
+function activateChip(){
+  document.getElementById('chip-t').innerText="СКАНИРОВАНИЕ...";
+  setTimeout(()=>{
+    const data = JSON.parse(localStorage.getItem(storageKey));
+    data.chipActive=true;
+    localStorage.setItem(storageKey, JSON.stringify(data));
+    toApp(data);
+  },2000);
+}
+
+function toApp(data){
+  document.getElementById('scr-chip').classList.remove('active');
+  document.getElementById('app').style.display='flex';
+  loadUser(data);
+  loadChats();
+}
+
+function loadUser(data){
+  if(!data) data = JSON.parse(localStorage.getItem(storageKey));
+  document.getElementById('view-chat').innerHTML = <h2>Привет, ${data.name}</h2>;
+  if(data.photo){
+    const img = document.createElement('img');
+    img.src = data.photo;
+    img.style.width='100px';
+    img.style.height='100px';
+    img.style.borderRadius='50%';
+    document.getElementById('view-chat').appendChild(img);
+  }
+}
+
+function loadChats(){
+  const l = document.getElementById('view-chat');
+  const u=[{n:"Alex",a:"🤖"},{n:"Sarah",a:"🎨"},{n:"Ahmed",a:"🌙"}];
+  u.forEach(x=>{
+    const div=document.createElement('div');
+    div.className='chat-item';
+    div.innerHTML=<div class="chat-av">${x.a}</div><div><h4>${x.n}</h4><p style="color:#b2b2b2;font-size:13px;">Secure connection active</p></div>;
+    l.appendChild(div);
+  });
+}
+</script>
+
+</body>
+</html>
